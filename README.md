@@ -8,3 +8,5 @@ A groundbreaking multi-modal Retrieval-Augmented Generation (RAG) application, m
 -   **Personalization Engine**: Adapts to user preferences and usage patterns over time.
 -   **Knowledge Graph**: Stores personalized information and usage patterns.
 -   **Anti-Hallucination Mechanism**: Ensures the reliability and accuracy of the generated responses.
+
+![alt text](diagram.png)
