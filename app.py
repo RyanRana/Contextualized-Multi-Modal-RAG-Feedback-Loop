@@ -1,4 +1,3 @@
-# File: app.py
 from flask import Flask, request, jsonify
 import logging
 import spacy
@@ -6,6 +5,8 @@ import requests
 import openai
 import json
 import networkx as nx
+from bs4 import BeautifulSoup
+import urllib.parse
 
 app = Flask(__name__)
 
@@ -81,10 +82,27 @@ def retrieve(processed_query):
     try:
         search_query = " ".join(processed_query['tokens'])
         documents = [{"title": "Example Document", "content": "This is an example document relevant to the query."}]
-        images = ["https://example.com/image.jpg"]
+        images = scrape_google_images(search_query)
         return documents, images
     except Exception as e:
         logging.error(f"Error retrieving data: {e}")
+        raise
+
+def scrape_google_images(query):
+    try:
+        query = urllib.parse.quote(query)
+        url = f"https://www.google.com/search?hl=en&tbm=isch&q={query}"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        image_urls = []
+        for img in soup.find_all('img', {'src': True}):
+            image_urls.append(img['src'])
+            if len(image_urls) >= 5:  # Limit to 5 images for simplicity
+                break
+        return image_urls
+    except Exception as e:
+        logging.error(f"Error scraping images: {e}")
         raise
 
 def generate_response(processed_query, documents, images):
